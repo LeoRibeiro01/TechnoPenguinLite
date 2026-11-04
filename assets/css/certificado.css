@@ -1,0 +1,150 @@
+/* Certificado em formato A4 paisagem, pensado para impressão e "salvar como PDF". */
+
+.pagina-certificado {
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+  background: #0f1f33;
+}
+
+.certificado-acoes {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.certificado {
+  --dourado: #c9a227;
+  --nivel: #2897e6;
+  width: min(100%, 1100px);
+  aspect-ratio: 297 / 210;
+  margin: 0 auto;
+  padding: 2.2%;
+  border-radius: 6px;
+  background: #fdfcf7;
+  color: #1a2e46;
+  box-shadow: 0 20px 60px #0008;
+  container-type: inline-size;
+}
+
+.certificado--iniciante { --nivel: #2e9e6b; }
+.certificado--intermediario { --nivel: #2897e6; }
+.certificado--avancado { --nivel: #8e24aa; }
+.certificado--completo { --nivel: #c9a227; }
+
+.certificado__moldura {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 3% 6%;
+  border: 3px solid var(--nivel);
+  outline: 1px solid var(--dourado);
+  outline-offset: -10px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 0 0, color-mix(in srgb, var(--nivel) 14%, transparent) 0 18%, transparent 18.2%),
+    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--nivel) 14%, transparent) 0 18%, transparent 18.2%);
+}
+
+.certificado__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.certificado__logo {
+  width: 22cqi;
+  filter: brightness(0) saturate(100%) invert(14%) sepia(37%) saturate(1400%) hue-rotate(186deg) brightness(92%);
+}
+
+.certificado__selo {
+  padding: .6cqi 1.8cqi;
+  border-radius: 999px;
+  background: var(--nivel);
+  color: #fff;
+  font-size: 1.6cqi;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.certificado__rotulo {
+  margin: 3cqi 0 1cqi;
+  color: var(--nivel);
+  font-family: "Piedra", serif;
+  font-size: 5cqi;
+  letter-spacing: .02em;
+}
+
+.certificado__texto {
+  max-width: 78cqi;
+  margin: .6cqi 0;
+  font-size: 2cqi;
+  line-height: 1.6;
+}
+
+.certificado__nome {
+  margin: 1cqi 0;
+  padding: 0 4cqi .6cqi;
+  border-bottom: 2px solid var(--dourado);
+  font-size: 4.6cqi;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.certificado__rodape {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 4cqi;
+  width: 100%;
+  margin-top: auto;
+}
+
+.certificado__rodape div {
+  display: grid;
+  gap: .4cqi;
+  font-size: 1.6cqi;
+}
+
+.certificado__rodape small {
+  padding-top: .6cqi;
+  border-top: 1px solid #1a2e4655;
+  color: #5c6f86;
+  font-size: 1.2cqi;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.certificado__mascote {
+  width: 9cqi;
+}
+
+.certificado__verificar {
+  margin: 1.4cqi 0 0;
+  color: #5c6f86;
+  font-size: 1.1cqi;
+  word-break: break-all;
+}
+
+.certificado-ausente {
+  max-width: 480px;
+  margin: 10vh auto;
+  color: #fff;
+  text-align: center;
+}
+
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@media print {
+  .pagina-certificado { padding: 0; background: #fff; }
+  .certificado-acoes { display: none; }
+  .certificado { width: 100%; box-shadow: none; border-radius: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

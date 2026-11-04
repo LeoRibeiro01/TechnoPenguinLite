@@ -9,7 +9,7 @@ final class Conquista extends Model
 {
     protected const TABLE = 'conquista';
     protected const PRIMARY_KEY = 'id_conquista';
-    protected const FILLABLE = ['nome_conquista', 'descricao_conquista'];
+    protected const FILLABLE = ['nome_conquista', 'descricao_conquista', 'codigo_conquista', 'icone_conquista'];
 
     public function deUsuario(int $idUsuario): array
     {

@@ -56,8 +56,10 @@ function executarUp(PDO $pdo, array $migrations): void
     $registrar = $pdo->prepare('INSERT INTO schema_migrations (nome, lote) VALUES (?, ?)');
     foreach ($pendentes as $nome) {
         try {
-            // DDL do MySQL confirma a transação implicitamente; cada migration é um único CREATE TABLE.
-            $pdo->exec($migrations[$nome]['up']);
+            // DDL do MySQL confirma a transação implicitamente; cada migration mexe numa única tabela.
+            foreach ((array) $migrations[$nome]['up'] as $sql) {
+                $pdo->exec($sql);
+            }
             $registrar->execute([$nome, $lote]);
             informar("Aplicada: {$nome}");
         } catch (Throwable $e) {
@@ -82,7 +84,9 @@ function executarDown(PDO $pdo, array $migrations): void
             throw new RuntimeException("Arquivo da migration {$nome} não foi encontrado.");
         }
         try {
-            $pdo->exec($migrations[$nome]['down']);
+            foreach ((array) $migrations[$nome]['down'] as $sql) {
+                $pdo->exec($sql);
+            }
             $remover->execute([$nome]);
             informar("Revertida: {$nome}");
         } catch (Throwable $e) {

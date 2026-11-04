@@ -9,7 +9,10 @@ final class Questao extends Model
 {
     protected const TABLE = 'questao';
     protected const PRIMARY_KEY = 'id_questao';
-    protected const FILLABLE = ['enunciado_questao', 'tipo_questao', 'gabarito_questao', 'id_licao'];
+    protected const FILLABLE = [
+        'enunciado_questao', 'tipo_questao', 'gabarito_questao', 'id_licao',
+        'alternativas_questao', 'explicacao_questao', 'sequencia_questao',
+    ];
 
     public function exercicio(int $idQuestao): ?array
     {

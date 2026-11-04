@@ -9,7 +9,7 @@ final class Sequencia extends Model
 {
     protected const TABLE = 'sequencia';
     protected const PRIMARY_KEY = 'id_sequencia';
-    protected const FILLABLE = ['dias_consecutivos_sequencia', 'ultima_atividade_sequencia', 'id_usuario'];
+    protected const FILLABLE = ['dias_consecutivos_sequencia', 'ultima_atividade_sequencia', 'id_usuario', 'inicio_sequencia'];
 
     public function deUsuario(int $idUsuario): ?array
     {

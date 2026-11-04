@@ -9,7 +9,10 @@ final class Modulo extends Model
 {
     protected const TABLE = 'modulo';
     protected const PRIMARY_KEY = 'id_modulo';
-    protected const FILLABLE = ['titulo_modulo', 'sequencia_modulo', 'id_curso'];
+    protected const FILLABLE = [
+        'titulo_modulo', 'sequencia_modulo', 'id_curso', 'descricao_modulo', 'projeto_modulo',
+        'dificuldade_modulo', 'aprofundamento_modulo', 'referencias_modulo',
+    ];
 
     public function licoes(int $idModulo): array
     {
