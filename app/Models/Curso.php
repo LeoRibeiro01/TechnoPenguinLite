@@ -1,88 +1,92 @@
 <?php
-declare(strict_types=1);
 
-namespace TechnoPenguin\Models;
+namespace App\Models;
 
-use TechnoPenguin\Core\Model;
+use Illuminate\Database\Eloquent\Model;
 
-/** Cada trilha do catálogo tem um curso, ligado pelo slug em linguagem_curso. */
-final class Curso extends Model
+/*
+ * MODEL Curso -> tabela "cursos" (RF22)
+ * Relacionamentos:
+ *   um curso PERTENCE A uma linguagem (belongsTo)
+ *   um curso da comunidade PERTENCE A um professor (belongsTo User)
+ *   um curso TEM MUITOS módulos (hasMany)
+ *   um curso TEM MUITAS lições ATRAVÉS dos módulos (hasManyThrough)
+ */
+class Curso extends Model
 {
-    protected const TABLE = 'curso';
-    protected const PRIMARY_KEY = 'id_curso';
-    protected const FILLABLE = [
-        'titulo_curso', 'descricao_curso', 'nivel_dificuldade_curso', 'linguagem_curso',
-        'historia_curso', 'uso_atual_curso', 'objetivos_curso', 'referencias_curso',
-        'tipo_curso', 'sigla_curso', 'cor_curso', 'publicado_curso', 'id_professor',
+    protected $fillable = [
+        'linguagem_id', 'professor_id', 'publicado',
+        'titulo', 'tipo', 'sigla', 'cor', 'descricao', 'historia', 'hoje', 'referencias',
     ];
 
-    public function modulos(int $idCurso): array
+    protected $casts = [
+        'publicado' => 'boolean',
+    ];
+
+    public function linguagem()
     {
-        return $this->many('SELECT * FROM modulo WHERE id_curso = ? ORDER BY sequencia_modulo', [$idCurso]);
+        return $this->belongsTo(Linguagem::class);
     }
 
-    public function porTrilha(string $trilha): ?array
+    // Como a coluna se chama professor_id (e não user_id), avisamos o nome dela.
+    public function professor()
     {
-        return $this->one('SELECT * FROM curso WHERE linguagem_curso = ? LIMIT 1', [$trilha]);
+        return $this->belongsTo(User::class, 'professor_id');
     }
 
-    /** Por trilha: total de lições e quantas o usuário já concluiu. */
-    public function resumoTrilhas(int $idUsuario): array
+    // Curso criado por um professor (e não um dos cursos oficiais do seeder)?
+    public function ehDaComunidade()
     {
-        $linhas = $this->many(
-            "SELECT c.linguagem_curso AS trilha, COUNT(DISTINCT m.id_modulo) AS total_modulos, COUNT(l.id_licao) AS total_licoes,
-                    COUNT(p.id_progresso) AS licoes_concluidas
-             FROM curso c
-             LEFT JOIN modulo m ON m.id_curso = c.id_curso
-             LEFT JOIN licao l ON l.id_modulo = m.id_modulo
-             LEFT JOIN progresso p ON p.id_licao = l.id_licao AND p.id_usuario = ? AND p.status_progresso = 'Concluída'
-             WHERE c.linguagem_curso IS NOT NULL
-             GROUP BY c.id_curso",
-            [$idUsuario]
-        );
-        return array_column($linhas, null, 'trilha');
+        return $this->professor_id !== null;
     }
 
-    /** Lições da trilha em ordem de estudo, com o progresso do usuário em cada uma. */
-    public function licoesComProgresso(int $idCurso, int $idUsuario): array
+    /*
+     * O usuário pode ver este curso?
+     *   - cursos oficiais e cursos publicados: todo mundo;
+     *   - rascunho (não publicado): só o professor dono e os admins.
+     */
+    public function visivelPara(User $user)
     {
-        return $this->many(
-            "SELECT m.id_modulo, m.titulo_modulo, m.sequencia_modulo, m.descricao_modulo, m.projeto_modulo,
-                    m.dificuldade_modulo, m.aprofundamento_modulo, m.referencias_modulo,
-                    l.id_licao, l.titulo_licao, l.sequencia_licao, l.pontos_licao,
-                    (SELECT COUNT(*) FROM questao q WHERE q.id_licao = l.id_licao) AS total_questoes,
-                    p.status_progresso, p.acertos_progresso, p.tentativas_progresso
-             FROM modulo m
-             LEFT JOIN licao l ON l.id_modulo = m.id_modulo
-             LEFT JOIN progresso p ON p.id_licao = l.id_licao AND p.id_usuario = ?
-             WHERE m.id_curso = ?
-             ORDER BY " . self::ORDEM_MODULOS . ', l.sequencia_licao',
-            [$idUsuario, $idCurso]
-        );
+        return $this->publicado || $user->podeEditar($this);
     }
 
-    /** Ordem de estudo: por dificuldade e, dentro dela, pela sequência do módulo. */
-    public const ORDEM_MODULOS = "FIELD(m.dificuldade_modulo, 'iniciante', 'intermediario', 'avancado'), m.sequencia_modulo";
-
-    /** Cursos criados por um professor, com contagens para o painel dele. */
-    public function doProfessor(int $idProfessor): array
+    // $curso->modulos  -> os módulos do curso, já na ordem certa
+    public function modulos()
     {
-        return $this->many(
-            'SELECT c.*,
-                    (SELECT COUNT(*) FROM modulo m JOIN licao l ON l.id_modulo = m.id_modulo WHERE m.id_curso = c.id_curso) AS total_licoes,
-                    (SELECT COUNT(*) FROM usuario_linguagem ul WHERE ul.linguagem = c.linguagem_curso) AS total_alunos,
-                    (SELECT COUNT(*) FROM pergunta pg WHERE pg.id_curso = c.id_curso AND pg.respondida_em IS NULL) AS perguntas_pendentes
-             FROM curso c WHERE c.id_professor = ? ORDER BY c.criado_em DESC',
-            [$idProfessor]
-        );
+        return $this->hasMany(Modulo::class)->orderBy('ordem');
     }
 
-    public function comModulos(int $idCurso): ?array
+    // $curso->licoes  -> todas as lições do curso (passando pela tabela modulos)
+    public function licoes()
     {
-        $curso = $this->find($idCurso);
-        if ($curso !== null) {
-            $curso['modulos'] = $this->modulos($idCurso);
+        return $this->hasManyThrough(Licao::class, Modulo::class);
+    }
+
+    /*
+     * Todas as lições do curso, NA ORDEM (módulo 1, lição 1, 2, 3; módulo 2...),
+     * e para cada uma diz se está aprovada e se está liberada para o usuário (RF29):
+     *   - a primeira lição sempre está liberada;
+     *   - as outras só depois que a anterior foi aprovada.
+     * Usada no CursoController (lista de lições) e no LicaoController (anterior/próxima).
+     */
+    public function licoesDoUsuario(User $user)
+    {
+        // Ids das lições em que o usuário já foi aprovado.
+        $aprovadas = $user->progressos()->where('aprovado', true)->pluck('licao_id')->all();
+
+        $licoes = Licao::join('modulos', 'modulos.id', '=', 'licoes.modulo_id')
+            ->where('modulos.curso_id', $this->id)
+            ->orderBy('modulos.ordem')
+            ->orderBy('licoes.ordem')
+            ->select('licoes.*')
+            ->get();
+
+        $anteriorAprovada = true;
+        foreach ($licoes as $licao) {
+            $licao->aprovada = in_array($licao->id, $aprovadas);
+            $licao->liberada = $anteriorAprovada;
+            $anteriorAprovada = $licao->aprovada;
         }
-        return $curso;
+        return $licoes;
     }
 }

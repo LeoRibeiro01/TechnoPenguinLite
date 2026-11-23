@@ -1,36 +1,24 @@
 <?php
-declare(strict_types=1);
 
-namespace TechnoPenguin\Models;
+namespace App\Models;
 
-use TechnoPenguin\Core\Model;
+use Illuminate\Database\Eloquent\Model;
 
-final class Progresso extends Model
+/*
+ * MODEL Progresso -> tabela "progressos" (RF16 e RF29)
+ * Guarda o resultado de um usuário numa lição.
+ */
+class Progresso extends Model
 {
-    protected const TABLE = 'progresso';
-    protected const PRIMARY_KEY = 'id_progresso';
-    protected const FILLABLE = [
-        'status_progresso', 'data_conclusao_progresso', 'id_usuario', 'id_licao',
-        'acertos_progresso', 'xp_progresso', 'pontos_progresso', 'total_questoes_progresso', 'tentativas_progresso',
-    ];
+    protected $fillable = ['user_id', 'licao_id', 'acertos', 'total', 'aprovado', 'concluido_em'];
 
-    public function deUsuario(int $idUsuario): array
+    public function user()
     {
-        return $this->many('SELECT * FROM progresso WHERE id_usuario = ? ORDER BY id_licao', [$idUsuario]);
+        return $this->belongsTo(User::class);
     }
 
-    public function daLicao(int $idUsuario, int $idLicao): ?array
+    public function licao()
     {
-        return $this->one('SELECT * FROM progresso WHERE id_usuario = ? AND id_licao = ? LIMIT 1', [$idUsuario, $idLicao]);
-    }
-
-    /** Lições concluídas hoje, para medir a meta diária. */
-    public function concluidasHoje(int $idUsuario): int
-    {
-        $linha = $this->one(
-            "SELECT COUNT(*) AS total FROM progresso WHERE id_usuario = ? AND status_progresso = 'Concluída' AND data_conclusao_progresso >= CURDATE()",
-            [$idUsuario]
-        );
-        return (int) ($linha['total'] ?? 0);
+        return $this->belongsTo(Licao::class);
     }
 }

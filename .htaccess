@@ -1,5 +1,0 @@
-# Bloqueia .env, .git e outros arquivos internos quando o projeto é servido pelo Apache (XAMPP).
-<FilesMatch "^\.|\.(md|example)$">
-    Require all denied
-</FilesMatch>
-RedirectMatch 404 /\.git

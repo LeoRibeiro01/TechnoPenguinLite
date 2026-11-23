@@ -1,18 +1,20 @@
 <?php
-declare(strict_types=1);
 
-namespace TechnoPenguin\Models;
+namespace App\Models;
 
-use TechnoPenguin\Core\Model;
+use Illuminate\Database\Eloquent\Model;
 
-final class Conquista extends Model
+/*
+ * MODEL Conquista -> tabela "conquistas" (RF17)
+ * As conquistas e medalhas que existem. Quem ganhou cada uma fica na tabela pivô "conquista_user".
+ */
+class Conquista extends Model
 {
-    protected const TABLE = 'conquista';
-    protected const PRIMARY_KEY = 'id_conquista';
-    protected const FILLABLE = ['nome_conquista', 'descricao_conquista', 'codigo_conquista', 'icone_conquista'];
+    protected $fillable = ['nome', 'descricao', 'icone', 'tipo', 'meta'];
 
-    public function deUsuario(int $idUsuario): array
+    // Relação N:N: os usuários que já ganharam esta conquista.
+    public function users()
     {
-        return $this->many('SELECT c.*, uc.data_desbloqueio FROM conquista c INNER JOIN usuario_conquista uc ON uc.id_conquista = c.id_conquista WHERE uc.id_usuario = ? ORDER BY uc.data_desbloqueio DESC', [$idUsuario]);
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 }

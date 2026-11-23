@@ -1,0 +1,867 @@
+/*
+ * ESTILO DAS TELAS DO SISTEMA (login, painel, cursos, lições, perfil...)
+ * A landing page usa outros dois arquivos: global.css e style.css.
+ *
+ * Organização: 1) cores  2) base  3) topo/menu  4) componentes  5) telas específicas
+ *              (inclui ACESSIBILIDADE: tamanho da fonte, alto contraste, destacar links)  6) celular
+ */
+
+/* ---------- 1) Cores da marca (variáveis CSS: use com var(--nome)) ---------- */
+:root {
+  --azul-escuro: #1a2e46;
+  --azul-medio: #5c7aa5;
+  --azul-claro: #2897e6;
+  --fundo: #eef3f9;
+  --branco: #ffffff;
+  --texto: #1b2430;
+  --texto-suave: #5b6b80;
+  --verde: #1f9d55;
+  --vermelho: #d64545;
+  --borda: #d7e0ea;
+}
+
+/* ---------- 2) Base ---------- */
+* {
+  box-sizing: border-box;   /* largura inclui borda e padding: facilita o layout */
+}
+
+body {
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--azul-claro);
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---------- 3) Topo e menu ---------- */
+.topo {
+  display: flex;                 /* coloca logo e menu lado a lado */
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;               /* no celular, o menu desce para a linha de baixo */
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--azul-escuro);
+}
+
+.topo__logo {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.menu a,
+.menu__sair {
+  color: var(--branco);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.menu__perfil {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.menu__sair {
+  background: none;
+  border: 1px solid var(--azul-medio);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* ---------- 4) Componentes reutilizados ---------- */
+.conteudo {
+  max-width: 1000px;
+  margin: 0 auto;        /* centraliza na tela */
+  padding: 24px 16px;
+}
+
+.rodape {
+  text-align: center;
+  padding: 24px;
+  color: var(--texto-suave);
+}
+
+/* Cartão branco: a "caixa" usada em quase todas as telas */
+.cartao {
+  display: block;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cartao--estreito {
+  max-width: 440px;
+  margin: 24px auto;
+}
+
+/* Formulários: um campo embaixo do outro */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+input[type="color"] {
+  height: 44px;
+  padding: 4px;
+}
+
+.botao {
+  display: inline-block;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--azul-claro);
+  color: var(--branco);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao:hover {
+  opacity: 0.9;
+}
+
+.botao--claro {
+  background: var(--branco);
+  color: var(--azul-escuro);
+  border: 1px solid var(--borda);
+}
+
+.botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Mensagens */
+.aviso {
+  background: #e3f1fd;
+  border-left: 4px solid var(--azul-claro);
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.erro {
+  background: #fdeaea;
+  border-left: 4px solid var(--vermelho);
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #8a1f1f;
+}
+
+.erro ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.centro {
+  text-align: center;
+}
+
+.suave {
+  color: var(--texto-suave);
+}
+
+.etiqueta {
+  display: inline-block;
+  background: var(--fundo);
+  color: var(--azul-escuro);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+/* Grade de cartões: quantas colunas couberem, cada uma com no mínimo 250px */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Barra de progresso: a div de dentro tem a largura = porcentagem concluída */
+.barra {
+  height: 10px;
+  background: var(--fundo);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 12px 0 4px;
+}
+
+.barra div {
+  height: 100%;
+  background: var(--verde);
+}
+
+/* Ícone colorido de curso (ex.: "Py") */
+.icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 48px;
+  padding: 0 6px;
+  border-radius: 12px;
+  color: var(--branco);
+  font-weight: 800;
+}
+
+/* ---------- AVATAR (o pinguim) ----------
+ * O avatar é uma <div> com várias <img> do mesmo tamanho (520x1024) empilhadas:
+ * a foto do pinguim (pintada pelo public/js/pinguim.js) e as roupas por cima.
+ * position: relative na div + position: absolute nas imagens = todas no mesmo lugar.
+ * overflow: hidden corta o que passa da moldura. */
+.avatar {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: var(--fundo, transparent);   /* cor de fundo escolhida pelo usuário */
+}
+
+.avatar__camada {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  transform: translateY(-3.9%);   /* sobe um pouco: o corte começa no topo dos chapéus */
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Pinguim inteiro: um retângulo com a proporção da imagem */
+.avatar--corpo {
+  aspect-ratio: 520 / 850;
+  border-radius: 20px;
+}
+
+/* Só o rosto: círculo com a cabeça ampliada */
+.avatar--rosto {
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.avatar--rosto .avatar__camada {
+  width: 130%;
+  left: -15%;
+  transform: translateY(-10.7%);
+}
+
+/* Tamanhos */
+.avatar--palco {
+  width: min(100%, 300px);
+  margin: 0 auto;
+  box-shadow: inset 0 -40px 60px #00000022;
+}
+
+.avatar--perfil {
+  width: 120px;
+}
+
+.avatar--mini {
+  width: 34px;
+  border: 2px solid #ffffffaa;
+}
+
+/* Foto de perfil redonda */
+.foto {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;   /* corta a imagem sem deformar */
+  border-radius: 50%;
+}
+
+.foto--mini {
+  width: 30px;
+  height: 30px;
+}
+
+.foto--grande {
+  display: block;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 16px;
+}
+
+/* ---------- 5) Telas específicas ---------- */
+
+/* Login */
+.mascote {
+  display: block;
+  width: 120px;
+  margin: 0 auto;
+}
+
+/* Painel */
+.boas-vindas {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.numero {
+  background: var(--azul-escuro);
+  color: var(--branco);
+  border-radius: 14px;
+  padding: 16px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.numero strong {
+  display: block;
+  font-size: 2rem;
+}
+
+.curso h3 {
+  margin: 12px 0 4px;
+}
+
+/* Perfil */
+.perfil {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.perfil__imagens {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Curso */
+.licoes li {
+  margin-bottom: 8px;
+}
+
+details {
+  margin-top: 16px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--azul-claro);
+}
+
+/* Lição: blocos de código vindos do conteúdo */
+.texto pre {
+  background: var(--azul-escuro);
+  color: #e6edf5;
+  padding: 14px;
+  border-radius: 10px;
+  overflow-x: auto;      /* código comprido rola para o lado, não estoura a tela */
+}
+
+.texto code {
+  background: var(--fundo);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.texto pre code {
+  background: none;
+  padding: 0;
+}
+
+.exercicio {
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.exercicio legend {
+  font-weight: 700;
+  padding: 0 6px;
+}
+
+.alternativa {
+  display: block;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.alternativa:hover {
+  background: var(--fundo);
+}
+
+.certo {
+  color: var(--verde);
+  font-weight: 700;
+}
+
+.errado {
+  color: var(--vermelho);
+}
+
+.resultado--ok {
+  border: 2px solid var(--verde);
+}
+
+.resultado--erro {
+  border: 2px solid var(--vermelho);
+}
+
+/* Conquistas */
+.conquista {
+  text-align: center;
+}
+
+.conquista__icone {
+  font-size: 3rem;
+}
+
+.conquista--bloqueada {
+  opacity: 0.55;
+}
+
+/* Meu pinguim (cores): prévia à esquerda e paletas à direita */
+.personalizar,
+.vestuario {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.personalizar__previa,
+.vestuario__perfil {
+  position: sticky;      /* o pinguim acompanha a rolagem da página */
+  top: 16px;
+  text-align: center;
+}
+
+.cores {
+  border: none;
+  padding: 0;
+  margin: 0 0 18px;
+}
+
+.cores legend {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.cores legend small {
+  display: block;
+  font-weight: 400;
+}
+
+.cores__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Cada cor: o rádio fica invisível e a bolinha (.cor__amostra) é o que se vê e clica */
+.cor {
+  position: relative;
+  cursor: pointer;
+}
+
+.cor input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.cor__amostra {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--cor);
+  border: 3px solid var(--borda);
+}
+
+/* Cor marcada: borda grossa azul */
+.cor input:checked + .cor__amostra {
+  border-color: var(--azul-claro);
+  box-shadow: 0 0 0 2px var(--azul-claro);
+}
+
+/* Foco do teclado na bolinha */
+.cor input:focus-visible + .cor__amostra {
+  outline: 3px solid #ffb300;
+  outline-offset: 2px;
+}
+
+/* "Outra cor": o seletor de cor do navegador fica invisível por cima da bolinha */
+.cor--livre .cor__amostra {
+  position: relative;
+  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+}
+
+.cor--livre input:checked + .cor__amostra {
+  background: var(--cor);
+}
+
+.cor--livre input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Texto só para leitores de tela (invisível na tela) */
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* Vestuário */
+.vestuario__saldo {
+  font-size: 1.1rem;
+}
+
+.grade-itens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.grade-itens form {
+  margin: 0;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Miniatura da peça: mostra só a parte da imagem onde a peça está */
+.item__imagem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 2px solid var(--borda);
+  border-radius: 12px;
+  background: var(--fundo);
+}
+
+.item__imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* object-position escolhe qual parte da imagem 520x1024 aparece na miniatura */
+.item__imagem--chapeu img { object-position: 50% 4%; }
+.item__imagem--oculos img { object-position: 50% 31%; }
+.item__imagem--pescoco img,
+.item__imagem--roupa img { object-position: 50% 74%; }
+
+.item__imagem--vazio {
+  font-size: 1.6rem;
+  color: var(--texto-suave);
+}
+
+.item:hover .item__imagem,
+.item:focus-visible .item__imagem {
+  border-color: var(--azul-claro);
+}
+
+.item--vestido .item__imagem {
+  border-color: var(--verde);
+  border-width: 3px;
+}
+
+.item:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.item__nome {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.item__preco {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--texto-suave);
+}
+
+.item--loja .item__preco {
+  color: var(--azul-claro);
+}
+
+.item--vestido .item__preco {
+  color: var(--verde);
+}
+
+/* Configurações, área do professor e admin */
+.opcoes {
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.opcoes label,
+.formulario .opcao {
+  display: flex;            /* checkbox/radio e texto na mesma linha */
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+textarea {
+  font-family: inherit;
+}
+
+textarea.codigo {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.zona-perigo {
+  border-color: var(--vermelho);
+}
+
+.botao--perigo {
+  background: var(--vermelho);
+}
+
+/* Linha com texto à esquerda e botões à direita (listas do professor e do admin) */
+.linha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.linha__texto {
+  flex: 1;                  /* ocupa o espaço que sobrar */
+  min-width: 180px;
+}
+
+.linha__texto small {
+  display: block;
+}
+
+.linha h2 {
+  margin: 0;
+}
+
+.busca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.busca label {
+  width: 100%;
+  font-weight: 600;
+}
+
+.em-linha {
+  display: flex;
+  gap: 6px;
+}
+
+.tabela-rolagem {
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela th,
+.tabela td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--borda);
+  vertical-align: middle;
+}
+
+/* ---------- ACESSIBILIDADE ---------- */
+
+/* Link "Pular para o conteúdo": escondido fora da tela até receber o foco pelo Tab */
+.pular {
+  position: absolute;
+  left: -9999px;
+}
+
+.pular:focus {
+  left: 16px;
+  top: 16px;
+  z-index: 10;
+  background: var(--branco);
+  color: var(--texto);
+  padding: 8px 12px;
+}
+
+/* Contorno bem visível em quem está com o foco do teclado */
+:focus-visible {
+  outline: 3px solid #ffb300;
+  outline-offset: 2px;
+}
+
+/* Tamanho do texto: a classe fica na tag <html>, e tudo que usa "rem" cresce junto */
+html.fonte-grande {
+  font-size: 112.5%;   /* 18px */
+}
+
+html.fonte-muito_grande {
+  font-size: 125%;     /* 20px */
+}
+
+/* Destacar links */
+html.links-destacados a {
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+/* Alto contraste: troca as variáveis de cor e reforça bordas */
+html.contraste {
+  --fundo: #000000;
+  --texto: #ffffff;
+  --texto-suave: #ffffff;
+  --borda: #ffffff;
+  --azul-claro: #ffeb3b;   /* amarelo: links e botões */
+  --verde: #7cfc00;
+  --vermelho: #ff6b6b;
+}
+
+html.contraste .cartao,
+html.contraste .numero,
+html.contraste input,
+html.contraste select,
+html.contraste textarea,
+html.contraste .aviso,
+html.contraste .erro,
+html.contraste .etiqueta,
+html.contraste .botao--claro {
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+html.contraste .botao {
+  color: #000000;          /* texto preto no botão amarelo */
+}
+
+html.contraste .botao--claro,
+html.contraste .botao--perigo {
+  color: #ffffff;
+}
+
+html.contraste .botao--perigo {
+  background: #000000;
+  border: 2px solid var(--vermelho);
+}
+
+html.contraste .topo {
+  border-bottom: 2px solid #ffffff;
+}
+
+/* ---------- 6) Celular (RNF04): telas com até 600px de largura ---------- */
+@media (max-width: 600px) {
+  .topo {
+    padding: 12px 16px;
+  }
+
+  .cartao {
+    padding: 16px;
+  }
+
+  .boas-vindas {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  /* No celular, o pinguim fica em cima e as opções embaixo */
+  .personalizar,
+  .vestuario {
+    grid-template-columns: 1fr;
+  }
+
+  .personalizar__previa,
+  .vestuario__perfil {
+    position: static;
+  }
+}

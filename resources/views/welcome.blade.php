@@ -1,0 +1,132 @@
+{{-- LANDING PAGE (página inicial pública, rota "/"). HTML/CSS da equipe; só os links usam route() e asset(). --}}
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a2e46">
+  <meta name="description"
+    content="Aprenda a programar ao teu ritmo, de forma simples e divertida, com o TechnoPenguin.">
+  <title>TechnoPenguin — Aprende a programar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Piedra&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('css/global.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+</head>
+
+<body>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="TechnoPenguin — início">
+      <img src="{{ asset('imgs/logo.svg') }}" alt="TechnoPenguin">
+    </a>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a href="#inicio">Início</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#contato">Contato</a>
+      <a class="button button--outline" href="{{ route('cadastro') }}">Cadastro</a>
+      <a class="button button--solid" href="{{ route('login') }}">Entrar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow">O teu próximo passo começa aqui</p>
+          <h1>Aprende a programar ao teu ritmo, de forma simples e divertida.</h1>
+          <p class="hero__text">Domina linguagens como HTML, CSS, JS e PHP através de lições interativas, desafios
+            diários e conquistas.</p>
+          <a class="button button--primary" href="#caminhos">Começar</a>
+        </div>
+        <img class="hero__penguin" src="{{ asset('imgs/teco-jumping.png') }}" alt="Teco, o pinguim, saltando animado">
+      </div>
+    </section>
+
+    <section class="benefits section" id="sobre">
+      <div class="section__heading">
+        <h2>Por que o TechnoPenguin?</h2>
+        <p>Por que devo usar esta plataforma para estudar?</p>
+      </div>
+      <div class="benefits__content">
+        <img class="benefits__penguin" src="{{ asset('imgs/teco-thinking.png') }}" alt="Teco pensando">
+        <ul class="benefit-list">
+          <li><span class="check" aria-hidden="true">✓</span><span><strong>Aprende na prática</strong><small>Exercícios
+                interativos e desafios feitos para ti.</small></span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span><strong>Acompanha o teu progresso</strong><small>Vê a
+                tua evolução e celebra cada conquista.</small></span></li>
+          <li><span class="check" aria-hidden="true">✓</span><span><strong>Do zero ao código</strong><small>Conteúdo
+                pensado para todos os níveis.</small></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="paths section" id="caminhos">
+      <div class="section__heading">
+        <h2>Escolhe o teu caminho na programação</h2>
+      </div>
+      <div class="path-grid">
+        <article class="path-card path-card--html">
+          <div class="path-card__icon" aria-label="HTML e CSS"><span>5</span><span>3</span></div>
+          <div class="path-card__body">
+            <h3>Estrutura e estilo</h3>
+            <p>Aprende a criar páginas web com HTML e CSS, da estrutura ao design.</p><a class="button button--card"
+              href="{{ route('cadastro') }}">Começar</a>
+          </div>
+        </article>
+        <article class="path-card path-card--js">
+          <div class="path-card__icon" aria-label="JavaScript">JS</div>
+          <div class="path-card__body">
+            <h3>Front-end / Full stack</h3>
+            <p>Desenvolve aplicações interativas e explora o universo JavaScript.</p><a class="button button--card"
+              href="{{ route('cadastro') }}">Começar</a>
+          </div>
+        </article>
+        <article class="path-card path-card--php">
+          <div class="path-card__icon" aria-label="PHP">php</div>
+          <div class="path-card__body">
+            <h3>Back-end / Banco de dados</h3>
+            <p>Aprende lógica de servidor, PHP e a trabalhar com bancos de dados.</p><a class="button button--card"
+              href="{{ route('cadastro') }}">Começar</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="steps section">
+      <div class="section__heading">
+        <h2>Como funciona?</h2>
+      </div>
+      <ol class="steps__list">
+        <li><span>1.</span>
+          <p>Cria a tua conta em menos de 1 minuto</p>
+        </li>
+        <li><span>2.</span>
+          <p>Define o teu nível de conhecimento e a linguagem inicial</p>
+        </li>
+        <li><span>3.</span>
+          <p>Mantém a tua sequência e continua a aprender</p>
+        </li>
+      </ol>
+      <img class="steps__penguin" src="{{ asset('imgs/teco-front.png') }}" alt="Teco pronto para aprender">
+    </section>
+
+    <section class="signup-cta" id="cadastro">
+      <div class="signup-cta__inner">
+        <div>
+          <h2>Pronto para escrever a tua primeira linha de código?</h2><a class="button button--primary"
+            href="{{ route('cadastro') }}">Criar conta</a>
+        </div>
+        <img src="{{ asset('imgs/teco-waving.png') }}" alt="Teco acenando um convite">
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer" id="contato"><a class="brand brand--footer" href="#inicio"><img src="{{ asset('imgs/logo.svg') }}"
+        alt="TechnoPenguin"></a>
+    <p>Aprende, pratica e cresce — um código de cada vez.</p><small>© 2026 TechnoPenguin</small>
+  </footer>
+</body>
+
+</html>

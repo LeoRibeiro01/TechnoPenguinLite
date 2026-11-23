@@ -1,21 +1,27 @@
 <?php
-declare(strict_types=1);
 
-namespace TechnoPenguin\Models;
+namespace App\Models;
 
-use TechnoPenguin\Core\Model;
+use Illuminate\Database\Eloquent\Model;
 
-final class Modulo extends Model
+/*
+ * MODEL Modulo -> tabela "modulos" (RF23)
+ *   um módulo PERTENCE A um curso
+ *   um módulo TEM MUITAS lições
+ */
+class Modulo extends Model
 {
-    protected const TABLE = 'modulo';
-    protected const PRIMARY_KEY = 'id_modulo';
-    protected const FILLABLE = [
-        'titulo_modulo', 'sequencia_modulo', 'id_curso', 'descricao_modulo', 'projeto_modulo',
-        'dificuldade_modulo', 'aprofundamento_modulo', 'referencias_modulo',
+    protected $fillable = [
+        'curso_id', 'titulo', 'descricao', 'dificuldade', 'ordem', 'projeto', 'aprofundamento', 'referencias',
     ];
 
-    public function licoes(int $idModulo): array
+    public function curso()
     {
-        return $this->many('SELECT * FROM licao WHERE id_modulo = ? ORDER BY sequencia_licao', [$idModulo]);
+        return $this->belongsTo(Curso::class);
+    }
+
+    public function licoes()
+    {
+        return $this->hasMany(Licao::class)->orderBy('ordem');
     }
 }

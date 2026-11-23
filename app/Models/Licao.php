@@ -1,31 +1,57 @@
 <?php
-declare(strict_types=1);
 
-namespace TechnoPenguin\Models;
+namespace App\Models;
 
-use TechnoPenguin\Core\Model;
+use Illuminate\Database\Eloquent\Model;
 
-final class Licao extends Model
+/*
+ * MODEL Licao -> tabela "licoes" (RF24)
+ *   uma lição PERTENCE A um módulo
+ *   uma lição TEM MUITOS exercícios
+ */
+class Licao extends Model
 {
-    protected const TABLE = 'licao';
-    protected const PRIMARY_KEY = 'id_licao';
-    protected const FILLABLE = ['titulo_licao', 'pontos_licao', 'sequencia_licao', 'id_modulo', 'teoria_licao', 'pratica_licao'];
+    // Sem isso o Laravel procuraria a tabela "licaos".
+    protected $table = 'licoes';
 
-    public function questoes(int $idLicao): array
+    protected $fillable = ['modulo_id', 'titulo', 'teoria', 'pratica', 'ordem'];
+
+    public function modulo()
     {
-        return $this->many('SELECT * FROM questao WHERE id_licao = ? ORDER BY sequencia_questao, id_questao', [$idLicao]);
+        return $this->belongsTo(Modulo::class);
     }
 
-    /** Lição com o módulo e a trilha a que pertence. */
-    public function comContexto(int $idLicao): ?array
+    public function exercicios()
     {
-        return $this->one(
-            'SELECT l.*, m.titulo_modulo, m.sequencia_modulo, m.projeto_modulo, c.id_curso, c.linguagem_curso AS trilha
-             FROM licao l
-             INNER JOIN modulo m ON m.id_modulo = l.id_modulo
-             INNER JOIN curso c ON c.id_curso = m.id_curso
-             WHERE l.id_licao = ? LIMIT 1',
-            [$idLicao]
-        );
+        return $this->hasMany(Exercicio::class);
+    }
+
+    public function ehDaComunidade()
+    {
+        return $this->modulo->curso->ehDaComunidade();
+    }
+
+    /*
+     * Teoria pronta para mostrar na tela.
+     *   - Cursos oficiais: o texto JÁ é HTML (escrito pela equipe) e vai direto.
+     *   - Cursos da comunidade: o professor digitou texto simples. e() escapa o HTML
+     *     (assim ninguém consegue colocar um <script>) e nl2br() transforma as quebras de linha em <br>.
+     * A view mostra com {!! $licao->teoriaHtml() !!}.
+     */
+    public function teoriaHtml()
+    {
+        if ($this->ehDaComunidade()) {
+            return nl2br(e($this->teoria));
+        }
+        return $this->teoria;
+    }
+
+    // Prática: nos cursos da comunidade vira um bloco de código (<pre>), também escapado.
+    public function praticaHtml()
+    {
+        if ($this->ehDaComunidade()) {
+            return '<pre><code>' . e($this->pratica) . '</code></pre>';
+        }
+        return $this->pratica;
     }
 }
